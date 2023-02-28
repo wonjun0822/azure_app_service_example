@@ -1,13 +1,4 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
-# GitHub recommends pinning actions to a commit SHA.
-# To get a newer version, you will need to update the SHA.
-# You can also reference a tag or branch, but the action may change without warning.
-
-name: Build and deploy a container to an Azure Web App
+  name: Build and deploy a container to an Azure Web App
 
 env:
   AZURE_WEBAPP_NAME: wonjun-azure-app # set this to your application's name
@@ -37,6 +28,11 @@ jobs:
           files: 'appsettings.json'
         env:
           Azure.Storage: ${{ secrets.AZURE_STORAGE }}
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: application.json
+          path: ./appsettings.json
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
