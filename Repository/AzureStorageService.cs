@@ -20,7 +20,7 @@ public class AzureStorageService : IStorageService
         get { return "azure"; }
     }
 
-    public async Task<BlobContentInfo?> UploadFile(IFormFile file) 
+    public async Task UploadFile(IFormFile file) 
     {
         try
         {
@@ -30,24 +30,22 @@ public class AzureStorageService : IStorageService
 
             await using (Stream? data = file?.OpenReadStream())
             {
-                return await blob.UploadAsync(data, false);
+                await blob.UploadAsync(data, false);
             }
         }
 
         // 해당 Container에 동일한 Blob File 있을 시 에러
         catch (RequestFailedException ex) when (ex.ErrorCode == BlobErrorCode.BlobAlreadyExists)
         {
-            return null;
         }
 
         // 그외 에러
         catch (RequestFailedException ex)
         {
-            return null;
         }
     }
 
-    public async Task<FileDownloadDTO?> DownloadFile(string blobName)
+    public async Task<FileDownloadDTO?> DownloadFile(string fileName)
     {
         FileDownloadDTO result = new();
 
@@ -55,11 +53,11 @@ public class AzureStorageService : IStorageService
         {
             BlobContainerClient container = _blobServiceClient.GetBlobContainerClient(_containerName);
 
-            BlobClient blob = container.GetBlobClient(blobName);
+            BlobClient blob = container.GetBlobClient(fileName);
 
             using (BlobDownloadStreamingResult downloadResult = await blob.DownloadStreamingAsync())
             {
-                return new FileDownloadDTO() { content = downloadResult.Content, contentType = downloadResult.Details.ContentType, fileName = blobName };
+                return new FileDownloadDTO() { content = downloadResult.Content, contentType = downloadResult.Details.ContentType, fileName = fileName };
             }
         }
 
@@ -70,13 +68,13 @@ public class AzureStorageService : IStorageService
         }
     }
 
-    public async Task DeleteFile(string blobName)
+    public async Task DeleteFile(string fileName)
     {
         try
         {
             BlobContainerClient container = _blobServiceClient.GetBlobContainerClient(_containerName);
 
-            BlobClient blob = container.GetBlobClient(blobName);
+            BlobClient blob = container.GetBlobClient(fileName);
 
             await blob.DeleteAsync();
         }

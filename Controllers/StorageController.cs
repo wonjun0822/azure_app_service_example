@@ -1,5 +1,8 @@
 using azure_app_service_example.Service;
+
 using Microsoft.AspNetCore.Mvc;
+
+using azure_app_service_example.Enum;
 
 namespace azure_app_service_example.Controllers;
 
@@ -10,35 +13,38 @@ namespace azure_app_service_example.Controllers;
 [Route("api")]
 public class StorageController : ControllerBase
 {
-    private readonly IStorageService _storageService;
+    private readonly IEnumerable<IStorageService> _storageService;
 
-    public StorageController(IStorageService storageService)
+    public StorageController(IEnumerable<IStorageService> storageService)
     {
         _storageService = storageService;
     }
 
+    [RequestFormLimits(MultipartBodyLengthLimit = 524_288_000)]
+    [RequestSizeLimit(524_288_000)]
     [HttpPost("files")]
-    public async Task<ActionResult> UploadFile(IFormFile file)
+    public async Task<ActionResult> UploadFile(StorageType stroageType, IFormFile file)
     {
         try
         {
-            await _storageService.UploadFile(file);
+            await _storageService.FirstOrDefault(x => x.storageType == stroageType.ToString())?.UploadFile(file)!;
 
-            return CreatedAtAction(nameof(DownloadFIle), new { fileName = file.FileName }, file);
+            //return Ok();
+            return CreatedAtAction(nameof(DownloadFile), new { fileName = file.FileName }, file);
         }
 
         catch
         {
-            return Problem("파일 다운로드 중 오류가 발생했습니다.");
+            return Problem("파일 업로드 중 오류가 발생했습니다.");
         }
     }
 
     [HttpGet("files")]
-    public async Task<ActionResult> DownloadFIle(string fileName)
+    public async Task<ActionResult> DownloadFile(StorageType stroageType, string fileName)
     {
         try
         {
-            var result = await _storageService.DownloadFile(fileName);
+            var result = await _storageService.FirstOrDefault(x => x.storageType == stroageType.ToString())?.DownloadFile(fileName)!;
 
             return File(result.content, result.contentType, result.fileName);
         }
@@ -50,11 +56,11 @@ public class StorageController : ControllerBase
     }
 
     [HttpDelete("files")]
-    public async Task<ActionResult> DeleteFile(string fileName)
+    public async Task<ActionResult> DeleteFile(StorageType stroageType, string fileName)
     {
         try
         {
-            await _storageService.DeleteFile(fileName);
+            await _storageService.FirstOrDefault(x => x.storageType == stroageType.ToString())?.DeleteFile(fileName)!;
 
             return NoContent();
         }

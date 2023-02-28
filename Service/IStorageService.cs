@@ -1,24 +1,20 @@
-using Azure.Storage.Blobs.Models;
-
 using azure_app_service_example.DTO;
 
 namespace azure_app_service_example.Service;
 
 public interface IStorageService
 {
+    // storageService 하위 모듈 구분을 위한 변수
     public string storageType {
         get;
     }
 
-    Task<BlobContentInfo> UploadFile(IFormFile file);
+    // Upload
+    Task UploadFile(IFormFile file);
 
-    Task<FileDownloadDTO> DownloadFile(string blobName);
+    // Download
+    Task<FileDownloadDTO> DownloadFile(string fileName);
 
-    Task DeleteFile(string blobName);
-
-    // /// <summary>
-    // /// This method returns a list of all files located in the container
-    // /// </summary>
-    // /// <returns>Blobs in a list</returns>
-    // Task<List<BlobDto>> ListAsync();
+    // Delete
+    Task DeleteFile(string fileName);
 }
