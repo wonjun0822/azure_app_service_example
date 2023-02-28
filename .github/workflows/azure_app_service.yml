@@ -1,4 +1,4 @@
-  name: Build and deploy a container to an Azure Web App
+name: Build and deploy a container to an Azure Web App
 
 env:
   AZURE_WEBAPP_NAME: wonjun-azure-app # set this to your application's name
