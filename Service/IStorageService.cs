@@ -14,6 +14,7 @@ public interface IStorageService
 
     // Download
     Task<FileDownloadDTO> DownloadFile(string fileName);
+    //Task DownloadFile(string fileName);
 
     // Delete
     Task DeleteFile(string fileName);

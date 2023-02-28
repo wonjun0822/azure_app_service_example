@@ -15,11 +15,13 @@ public class StorageController : ControllerBase
 {
     private readonly IEnumerable<IStorageService> _storageService;
 
+    // storageService DI(종속성 주입)
     public StorageController(IEnumerable<IStorageService> storageService)
     {
         _storageService = storageService;
     }
 
+    // 파일 제한 500MB
     [RequestFormLimits(MultipartBodyLengthLimit = 524_288_000)]
     [RequestSizeLimit(524_288_000)]
     [HttpPost("files")]
@@ -27,6 +29,8 @@ public class StorageController : ControllerBase
     {
         try
         {
+            // 요청에 따른 storageService 호출
+            // azure, amazon
             await _storageService.FirstOrDefault(x => x.storageType == stroageType.ToString())?.UploadFile(file)!;
 
             //return Ok();

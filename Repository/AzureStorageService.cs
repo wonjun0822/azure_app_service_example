@@ -57,7 +57,12 @@ public class AzureStorageService : IStorageService
 
             using (BlobDownloadStreamingResult downloadResult = await blob.DownloadStreamingAsync())
             {
-                return new FileDownloadDTO() { content = downloadResult.Content, contentType = downloadResult.Details.ContentType, fileName = fileName };
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    await downloadResult.Content.CopyToAsync(ms);
+
+                    return new FileDownloadDTO() { content = ms.ToArray(), contentType = downloadResult.Details.ContentType, fileName = fileName };
+                }
             }
         }
 
@@ -83,4 +88,5 @@ public class AzureStorageService : IStorageService
         {
         }
     }
+
 }
