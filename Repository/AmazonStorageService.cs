@@ -63,9 +63,9 @@ public class AmazonStorageService : IStorageService
                     PartNumber = i,
                     PartSize = partSize,
                     FilePosition = filePosition,
-                    InputStream = fileStream,
-                    ServerSideEncryptionCustomerMethod = ServerSideEncryptionCustomerMethod.AES256,
-                    ServerSideEncryptionCustomerProvidedKey = _base64Key
+                    InputStream = fileStream
+                    // ServerSideEncryptionCustomerMethod = ServerSideEncryptionCustomerMethod.AES256,
+                    // ServerSideEncryptionCustomerProvidedKey = _base64Key
                 };
 
                 uploadResponses.Add(await _amazonS3Client.UploadPartAsync(uploadRequest));
@@ -122,9 +122,9 @@ public class AmazonStorageService : IStorageService
             // 객체 다운로드 요청 생성
             GetObjectRequest request = new GetObjectRequest() {
                 BucketName = _bucketName,
-                Key = fileName,
-                ServerSideEncryptionCustomerMethod = ServerSideEncryptionCustomerMethod.AES256,
-                ServerSideEncryptionCustomerProvidedKey = _base64Key
+                Key = fileName
+                // ServerSideEncryptionCustomerMethod = ServerSideEncryptionCustomerMethod.AES256,
+                // ServerSideEncryptionCustomerProvidedKey = _base64Key
             };
 
             using (GetObjectResponse response = await _amazonS3Client.GetObjectAsync(request))
@@ -149,6 +149,17 @@ public class AmazonStorageService : IStorageService
             return null;
         }
     }
+
+    // public string DownloadUrl(string fileName)
+    // {
+    //     GetPreSignedUrlRequest preSignedUrlRequest = new GetPreSignedUrlRequest {
+    //         BucketName = _bucketName,
+    //         Key = fileName,
+    //         Expires = DateTime.UtcNow.AddMinutes(10)
+    //     };
+
+    //     return _amazonS3Client.GetPreSignedURL(preSignedUrlRequest);
+    // }
 
     public async Task DeleteFile(string fileName)
     {

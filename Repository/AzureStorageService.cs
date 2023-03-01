@@ -72,7 +72,7 @@ public class AzureStorageService : IStorageService
             return null;
         }
     }
-
+    
     public async Task DeleteFile(string fileName)
     {
         try
